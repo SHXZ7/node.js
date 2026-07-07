@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { generateText } from "ai";
 import { XMLParser } from "fast-xml-parser";
 import { z } from "zod";
-import { createLovableAiGatewayProvider } from "./ai-gateway.server";
+import { createGroqProvider } from "./ai-gateway.server";
 
 const InputSchema = z.object({
   country: z.string().min(1).max(80),
@@ -110,8 +110,8 @@ function normalize(
 export const fetchMonitor = createServerFn({ method: "POST" })
   .inputValidator((raw: unknown) => InputSchema.parse(raw))
   .handler(async ({ data }) => {
-    const key = process.env.LOVABLE_API_KEY;
-    if (!key) throw new Error("Missing LOVABLE_API_KEY");
+    const key = process.env.GROQ_API_KEY;
+    if (!key) throw new Error("Missing GROQ_API_KEY");
 
     const jobs: Array<{ bucket: RawItem["bucket"]; query: string; provider: Provider; url: string }> = [];
     const push = (bucket: RawItem["bucket"], query: string, q: string) => {
@@ -149,8 +149,8 @@ export const fetchMonitor = createServerFn({ method: "POST" })
       query: r.query,
     }));
 
-    const gateway = createLovableAiGatewayProvider(key);
-    const model = gateway("google/gemini-3-flash-preview");
+    const groq = createGroqProvider(key);
+    const model = groq("llama-3.3-70b-versatile");
 
     const prompt = `You are an economics news analyst monitoring "${data.country}".
 

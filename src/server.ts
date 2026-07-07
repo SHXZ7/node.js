@@ -1,3 +1,5 @@
+import "./lib/load-env";
+
 import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";
